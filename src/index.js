@@ -7,7 +7,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: '*', // Allow all origins, replace with specific origins in production
+  origin: 'https://uam-delta.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -39,6 +39,15 @@ AppDataSource.initialize()
         app.use('/api/auth', authRoutes);
         app.use('/api/software', softwareRoutes);
         app.use('/api/requests', requestRoutes);
+
+        // Health check route
+        app.get('/health', (req, res) => {
+            res.status(200).json({
+                status: 'ok',
+                message: 'Service is running',
+                timestamp: new Date().toISOString()
+            });
+        });
 
         app.use((err, req, res, next) => {
             console.error(err.stack);
