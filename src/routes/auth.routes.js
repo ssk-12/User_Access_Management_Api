@@ -10,7 +10,7 @@ const userRepository = AppDataSource.getRepository("User");
 
 router.post('/signup', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, role } = req.body;
 
         const existingUser = await userRepository.findOne({ where: { username } });
         if (existingUser) {
@@ -19,10 +19,14 @@ router.post('/signup', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Validate role against allowed values
+        const allowedRoles = ["Employee", "Manager", "Admin"];
+        const userRole = allowedRoles.includes(role) ? role : "Employee";
+
         const user = userRepository.create({
             username,
             password: hashedPassword,
-            role: "Manager"
+            role: userRole
         });
 
         await userRepository.save(user);
